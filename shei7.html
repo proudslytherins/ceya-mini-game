@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Play!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for Pastel Palette */
+        :root {
+            --lilac: #D8B4E2;
+            --baby-pink: #FFD1DC;
+            --cream: #FFFDD0;
+            --dark-outline: #2D2D2D;
+            --text-color: #5A4A6A;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(135deg, var(--lilac), var(--baby-pink), var(--cream));
+            background-size: 200% 200%;
+            animation: gradientBG 10s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+            position: relative;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Typography & Buttons */
+        h1 {
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 3px 3px 0 var(--lilac), 6px 6px 0 var(--dark-outline);
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            color: white;
+            text-shadow: 2px 2px 0 var(--dark-outline);
+        }
+
+        button.pixel-btn {
+            background-color: var(--cream);
+            border: 4px solid var(--dark-outline);
+            color: var(--text-color);
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--dark-outline);
+            transition: transform 0.1s, box-shadow 0.1s;
+            z-index: 10;
+            margin: 10px;
+        }
+
+        button.pixel-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--dark-outline);
+            background-color: white;
+        }
+
+        button.pixel-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0 var(--dark-outline);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 0.7rem;
+            padding: 10px 15px;
+        }
+
+        /* Floating Candies */
+        .candy {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 4s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        /* Selection Cards */
+        .selection-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.4);
+            border: 4px solid var(--dark-outline);
+            border-radius: 10px;
+            padding: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .art-gumball {
+            width: 120px;
+            height: 180px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        /* */
+        .gb-lid {
+            width: 48px;
+            height: 20px;
+            background: var(--lilac);
+            border: 4px solid var(--dark-outline);
+            border-radius: 24px 24px 0 0;
+            position: absolute;
+            top: -4px; /* Moved slightly up to reduce the 'too low' look */
+            left: 32px;
+            z-index: 3;
+            box-shadow: inset -4px -4px 0 rgba(0,0,0,0.15), inset 4px 4px 0 rgba(255,255,255,0.4);
+        }
+        /* */
+        
+        .gb-lid-knob {
+            width: 12px;
+            height: 8px;
+            background: var(--lilac);
+            border: 4px solid var(--dark-outline);
+            border-radius: 8px 8px 0 0;
+            position: absolute;
+            top: -12px;
+            left: 14px;
+        }
+
+        .gb-dome {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.25);
+            border: 4px solid var(--dark-outline);
+            border-radius: 50%;
+            position: absolute;
+            left: 11px; 
+            top: 15px; 
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-end;
+            justify-content: center;
+            padding: 5px;
+            box-sizing: border-box;
+            box-shadow: inset -10px -10px 15px rgba(0,0,0,0.1), inset 8px 8px 10px rgba(255,255,255,0.7);
+            z-index: 2;
+        }
+        .gb-glass-highlight {
+            position: absolute;
+            width: 15px;
+            height: 35px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            top: 15px;
+            left: 15px;
+            transform: rotate(30deg);
+            z-index: 3;
+            pointer-events: none;
+        }
+        .gb-ball {
+            width: 20px; height: 20px; 
+            border-radius: 50%; 
+            border: 2px solid var(--dark-outline); 
+            margin: 1px;
+            box-shadow: inset -4px -4px 0 rgba(0,0,0,0.15); 
+            animation: subtleBounce 2s infinite alternate ease-in-out;
+        }
+        .gb-ball:nth-child(odd) { animation-delay: 0.5s; }
+        .gb-ball:nth-child(even) { animation-delay: 1s; }
+        
+        @keyframes subtleBounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-3px); }
+        }
+
+        .gb-base {
+            width: 90px;
+            height: 65px;
+            background: var(--lilac);
+            border: 4px solid var(--dark-outline);
+            position: absolute;
+            bottom: 5px;
+            left: 11px;
+            border-radius: 15px 15px 25px 25px; 
+            box-shadow: inset -8px -8px 0 rgba(0,0,0,0.15), inset 4px 4px 0 rgba(255,255,255,0.4);
+            z-index: 1;
+        }
+        .gb-knob {
+            width: 28px; height: 16px; 
+            background: #e0e0e0; 
+            border: 2px solid var(--dark-outline); 
+            border-radius: 4px;
+            position: absolute;
+            top: 14px; 
+            left: 29px;
+            box-shadow: inset -3px -3px 0 rgba(0,0,0,0.2);
+        }
+        .gb-slot {
+            width: 18px; height: 22px;
+            background: #333;
+            border: 2px solid var(--dark-outline);
+            border-radius: 4px 4px 0 0;
+            position: absolute;
+            bottom: 4px; 
+            left: 34px;
+            box-shadow: inset 2px 2px 0 rgba(0,0,0,0.5);
+        }
+
+        /* TURNTABLE VISUAL (Untouched) */
+        .art-turntable {
+            width: 150px;
+            height: 120px;
+            position: relative;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+        .tt-base {
+            width: 140px; height: 100px; 
+            background: var(--lilac); 
+            border: 4px solid var(--dark-outline);
+            border-radius: 10px; 
+            position: absolute; 
+            bottom: 0; left: 1px; 
+            box-shadow: inset -8px -8px 0 rgba(0,0,0,0.15), inset 4px 4px 0 rgba(255,255,255,0.4);
+        }
+        .tt-buttons {
+            position: absolute;
+            bottom: 10px; right: 10px;
+            display: flex; gap: 4px;
+        }
+        .tt-btn {
+            width: 8px; height: 8px;
+            background: var(--baby-pink);
+            border: 2px solid var(--dark-outline);
+            border-radius: 2px;
+            box-shadow: inset -2px -2px 0 rgba(0,0,0,0.2);
+        }
+        .tt-record {
+            width: 92px; height: 92px; 
+            background: #2D2D2D; 
+            border: 4px solid var(--dark-outline);
+            border-radius: 50%; 
+            position: absolute; 
+            top: 8px; left: 12px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 0 3px #222, inset 0 0 0 7px #2D2D2D, inset 0 0 0 11px #222, inset 0 0 0 15px #2D2D2D;
+            overflow: hidden;
+        }
+        .tt-shine {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.15) 15%, transparent 30%, transparent 50%, rgba(255,255,255,0.15) 65%, transparent 80%);
+            animation: spinShine 5s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes spinShine {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .tt-label {
+            width: 32px; height: 32px; 
+            background: var(--baby-pink); 
+            border: 2px solid var(--dark-outline);
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: inset -2px -2px 0 rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tt-hole {
+            width: 6px; height: 6px;
+            background: var(--dark-outline);
+            border-radius: 50%;
+        }
+        .tt-arm-base {
+            width: 18px; height: 18px;
+            background: #bbb;
+            border: 2px solid var(--dark-outline);
+            border-radius: 50%;
+            position: absolute;
+            right: 15px; top: 15px;
+            box-shadow: inset -3px -3px 0 rgba(0,0,0,0.2);
+        }
+        .tt-arm {
+            width: 6px; height: 50px; 
+            background: #e0e0e0; 
+            border: 2px solid var(--dark-outline);
+            position: absolute; 
+            right: 21px; top: 24px; 
+            transform: rotate(25deg); 
+            transform-origin: top center;
+            border-radius: 3px;
+            box-shadow: inset -2px 0 0 rgba(0,0,0,0.15);
+        }
+        .tt-stylus {
+            width: 10px; height: 14px;
+            background: #444;
+            border: 2px solid var(--dark-outline);
+            position: absolute;
+            bottom: -6px; left: -4px;
+            border-radius: 2px;
+        }
+
+        /* GUMBALL MACHINE INTERACTION (Untouched) */
+        .shake-gumballs .gb-ball {
+            animation: gumballJumble 0.6s ease-in-out;
+        }
+        .shake-gumballs .gb-ball:nth-child(even) {
+            animation: gumballJumbleAlt 0.6s ease-in-out;
+        }
+        
+        @keyframes gumballJumble {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-3px, -15px); }
+            50% { transform: translate(4px, -20px); }
+            75% { transform: translate(2px, -8px); }
+            100% { transform: translate(0, 0); }
+        }
+        @keyframes gumballJumbleAlt {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(3px, -12px); }
+            50% { transform: translate(-4px, -25px); }
+            75% { transform: translate(-2px, -10px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .spin {
+            animation: spinAnim 2s linear;
+        }
+        @keyframes spinAnim {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(1080deg); }
+        }
+
+        /* Popups */
+        .popup {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border: 4px solid var(--dark-outline);
+            border-radius: 15px;
+            box-shadow: 6px 6px 0 var(--baby-pink);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            max-width: 80%;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .popup.show {
+            opacity: 1;
+        }
+
+        /* Music Notes */
+        .note {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0;
+        }
+        .note-anim {
+            animation: flyOut 1.5s ease-out forwards;
+        }
+        @keyframes flyOut {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: translate(calc(var(--tx) * 50px), calc(var(--ty) * -50px)) scale(1.5); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="landing-page" class="screen active">
+        <div class="candy" style="top: 20%; left: 15%; animation-delay: 0s;">🍭</div>
+        <div class="candy" style="top: 15%; right: 20%; animation-delay: 1s;">🍬</div>
+        <div class="candy" style="bottom: 30%; left: 25%; animation-delay: 2s;">🍮</div>
+        <div class="candy" style="bottom: 25%; right: 15%; animation-delay: 0.5s;">🍡</div>
+        <div class="candy" style="top: 40%; left: 5%; animation-delay: 1.5s;">🧁</div>
+        <div class="candy" style="top: 50%; right: 8%; animation-delay: 0.8s;">🍧</div>
+
+        <h1>Let's Play!</h1>
+        <button class="pixel-btn" onclick="navigateTo('selection-page')">START</button>
+    </div>
+
+    <div id="selection-page" class="screen">
+        <h2>Choose Your Vibe</h2>
+        <div class="selection-container">
+            
+            <div class="card" onclick="navigateTo('gumball-page')">
+                <div class="art-gumball">
+                    <div class="gb-lid"><div class="gb-lid-knob"></div></div>
+                    <div class="gb-dome">
+                        <div class="gb-glass-highlight"></div>
+                        <div class="gb-ball" style="background: #FFB3BA;"></div>
+                        <div class="gb-ball" style="background: #BAE1FF;"></div>
+                        <div class="gb-ball" style="background: #FFFFBA;"></div>
+                        <div class="gb-ball" style="background: #BAFFC9;"></div>
+                        <div class="gb-ball" style="background: #E8BAFF;"></div>
+                        <div class="gb-ball" style="background: #FFDFBA;"></div>
+                    </div>
+                    <div class="gb-base">
+                        <div class="gb-knob"></div>
+                        <div class="gb-slot"></div>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem;">Gumball<br>Machine</div>
+            </div>
+
+            <div class="card" onclick="navigateTo('vinyl-page')">
+                <div class="art-turntable">
+                    <div class="tt-base">
+                        <div class="tt-buttons">
+                            <div class="tt-btn"></div>
+                            <div class="tt-btn"></div>
+                        </div>
+                    </div>
+                    <div class="tt-record">
+                        <div class="tt-shine"></div>
+                        <div class="tt-label"><div class="tt-hole"></div></div>
+                    </div>
+                    <div class="tt-arm-base"></div>
+                    <div class="tt-arm"><div class="tt-stylus"></div></div>
+                </div>
+                <div style="font-size: 0.8rem;">Vinyl<br>Turntable</div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="gumball-page" class="screen">
+        <button class="pixel-btn back-btn" onclick="navigateTo('selection-page')">← BACK</button>
+        
+        <div class="art-gumball" style="transform: scale(1.5); margin-bottom: 60px; cursor: pointer;" id="big-gumball" onclick="playGumball()">
+            <div class="gb-lid"><div class="gb-lid-knob"></div></div>
+            <div class="gb-dome">
+                <div class="gb-glass-highlight"></div>
+                <div class="gb-ball" style="background: #FFB3BA;"></div>
+                <div class="gb-ball" style="background: #BAE1FF;"></div>
+                <div class="gb-ball" style="background: #FFFFBA;"></div>
+                <div class="gb-ball" style="background: #BAFFC9;"></div>
+                <div class="gb-ball" style="background: #E8BAFF;"></div>
+                <div class="gb-ball" style="background: #FFDFBA;"></div>
+                <div class="gb-ball" style="background: #FFB3BA;"></div>
+            </div>
+            <div class="gb-base">
+                <div class="gb-knob"></div>
+                <div class="gb-slot"></div>
+            </div>
+        </div>
+
+        <p style="font-size: 0.7rem;">Click the machine for a sweet message!</p>
+        <div id="gumball-msg" class="popup"></div>
+    </div>
+
+    <div id="vinyl-page" class="screen">
+        <button class="pixel-btn back-btn" onclick="navigateTo('selection-page')">← BACK</button>
+        
+        <div style="position: relative;">
+            
+            <div class="art-turntable" style="transform: scale(1.5); margin-bottom: 60px; cursor: pointer;" id="big-turntable" onclick="playVinyl()">
+                <div class="tt-base">
+                    <div class="tt-buttons">
+                        <div class="tt-btn"></div>
+                        <div class="tt-btn"></div>
+                    </div>
+                </div>
+                <div class="tt-record" id="active-record">
+                    <div class="tt-shine"></div>
+                    <div class="tt-label"><div class="tt-hole"></div></div>
+                </div>
+                <div class="tt-arm-base"></div>
+                <div class="tt-arm"><div class="tt-stylus"></div></div>
+            </div>
+
+            <div id="notes-container" style="position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);"></div>
+        </div>
+
+        <p style="font-size: 0.7rem;">Click the vinyl to spin a track!</p>
+        <div id="vinyl-msg" class="popup"></div>
+    </div>
+
+    <script>
+        // --- Navigation Logic ---
+        function navigateTo(pageId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            // Hide popups when navigating
+            document.getElementById('gumball-msg').classList.remove('show');
+            document.getElementById('vinyl-msg').classList.remove('show');
+        }
+
+        // --- Data & State ---
+        const messages = [
+            "good luck for today, ceya!",
+            "ayo semangat, future film director",
+            "udah nonton film apa hari ini?",
+            "proud of you, shei",
+            "kamu cantik kata daryl dixon",
+            "don't forget to eat, ceya",
+            "istirahat dulu kalau lagi capek",
+            "bangga banget sama semua progres kamu hari ini",
+            "you got this, shei. satu-satu pelan-pelan aja",
+            "can't wait to see your movie on big screen",
+            "hari ini capek ya? proud of you for surviving",
+            "just a reminder that you are loved, ceya",
+            "take your time, nggak usah buru-buru ya shei",
+            "jangan lupa senyum hari ini, tipis-tipis aja gapapa",
+            "you're the main character of your own life, remember that"
+        ];
+
+        const songs = [
+            "Fake Plastic Trees - Radiohead",
+            "Opera House - Cigarettes After Sex",
+            "About You - The 1975",
+            "Enough For You - Reality Club",
+            "Anytime, Anyplace, Anyhow - Matt Maltese",
+            "Purple Rain - Prince",
+            "Eyes Without A Face - Billy Idol",
+            "Do I Wanna Know? - Arctic Monkeys",
+            "Sienna - The Marías",
+            "Lacy - Olivia Rodrigo",
+            "We Hug Now - Sydney Rose"
+        ];
+
+        // Track last indices to prevent immediate repetition
+        let lastMsgIndex = -1;
+        let lastSongIndex = -1;
+
+        function getRandomUniqueIndex(arrayLength, lastIndex) {
+            if (arrayLength <= 1) return 0;
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * arrayLength);
+            } while (newIndex === lastIndex);
+            return newIndex;
+        }
+
+        // --- Feature 1: Gumball Machine ---
+        function playGumball() {
+            const machine = document.getElementById('big-gumball');
+            const popup = document.getElementById('gumball-msg');
+            
+            // Reset state
+            popup.classList.remove('show');
+            machine.classList.remove('shake-gumballs'); 
+            
+            // Trigger reflow to restart animation
+            void machine.offsetWidth; 
+            
+            // Add animation targeting only the balls inside
+            machine.classList.add('shake-gumballs');
+
+            setTimeout(() => {
+                lastMsgIndex = getRandomUniqueIndex(messages.length, lastMsgIndex);
+                popup.innerText = messages[lastMsgIndex];
+                popup.classList.add('show');
+            }, 600); // Show message after bounce finishes
+        }
+
+        // --- Feature 2: Vinyl Turntable ---
+        function playVinyl() {
+            const record = document.getElementById('active-record');
+            const popup = document.getElementById('vinyl-msg');
+            const notesContainer = document.getElementById('notes-container');
+            
+            // Reset state
+            popup.classList.remove('show');
+            record.classList.remove('spin');
+            notesContainer.innerHTML = ''; // Clear old notes
+            
+            // Trigger reflow
+            void record.offsetWidth;
+            
+            // Add spin animation
+            record.classList.add('spin');
+
+            // Generate floating notes
+            const noteSymbols = ['🎵', '🎶', '🎼'];
+            for(let i = 0; i < 4; i++) {
+                let note = document.createElement('div');
+                note.innerText = noteSymbols[Math.floor(Math.random() * noteSymbols.length)];
+                note.className = 'note note-anim';
+                // Randomize flight path using CSS variables
+                note.style.setProperty('--tx', (Math.random() * 4 - 2).toFixed(2));
+                note.style.setProperty('--ty', (Math.random() * 3 + 1).toFixed(2));
+                notesContainer.appendChild(note);
+            }
+
+            setTimeout(() => {
+                lastSongIndex = getRandomUniqueIndex(songs.length, lastSongIndex);
+                popup.innerHTML = `🎵 Now Playing:<br><br>${songs[lastSongIndex]}`;
+                popup.classList.add('show');
+            }, 1000); // Show song title in the middle of the spin
+        }
+    </script>
+</body>
+</html>
